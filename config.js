@@ -11,7 +11,7 @@ const config = {
 
 	yuruConfig: {
 		debug: false,
-		admin: 515302066,
+		admin: -1,
 		autoAddFriend: true,
 		autoAddGroup: false,
 		searchLimit: 30,
@@ -39,7 +39,7 @@ const config = {
 		port: 3306,
 		db: "yuruchan",
 		user: "root",
-		password: "ca2326298",
+		password: "",
 		expire: 172800
 	}
 
