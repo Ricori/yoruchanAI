@@ -11,7 +11,7 @@ const config = {
 
 	yuruConfig: {
 		debug: false,
-		admin: 515302066,
+		admin: [515302066,122308286],
 		autoAddFriend: true,
 		autoAddGroup: false,
 		searchLimit: 30,

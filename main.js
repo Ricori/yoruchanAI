@@ -42,7 +42,7 @@ bot.on('request.friend', (context) => {
 
 //管理员命令处理
 bot.on('message.private', (e, context) => {
-	if (context.user_id == setting.admin) {
+	if (setting.admin.indexOf(context.user_id) > -1) {
 		//允许加群
 		let search = /--add-group=([0-9]+)/.exec(context.message);
 		if (search) {
@@ -153,7 +153,10 @@ async function privateAndAtMsg(e, context) {
 		return context.message.search(text) !== -1;
 	}
 	
-	if(hasText("help")){
+	if(hasText("--")){
+		//管理命令
+		return;
+	} else if (hasText("help")){
 		//帮助文本
 		return replyText.helptext;
 	} else if (hasImage(context.message)) {
@@ -191,6 +194,9 @@ async function privateAndAtMsg(e, context) {
 		await todayAnime(date.format('yyyyMMdd')).then(
 			ret => { replyMsg(context, ret) }
 		);
+	} else if(hasText("新年礼物")){
+		let txt = '最新12月合集\nhttps://pan.baidu.com/s/1w-xXd94oNfIzo_F9Ax1EsQ 提取码: 5wzw';
+		replyMsg(context, txt, true);
 	} else {
 		//其他指令
 		return replyText.defaultReply;
