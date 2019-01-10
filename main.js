@@ -199,7 +199,7 @@ async function privateAndAtMsg(e, context) {
 		replyMsg(context, txt, true);
 	} else {
 		//其他指令
-		return replyText.defaultReply;
+		return replyText.defaultReply();
 	}
 }
 

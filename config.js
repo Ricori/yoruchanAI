@@ -11,11 +11,11 @@ const config = {
 
 	yuruConfig: {
 		debug: false,
-		admin: [515302066,122308286],
+		admin: [515302066,122308286,1040727286,790431756],
 		autoAddFriend: true,
 		autoAddGroup: false,
 		searchLimit: 30,
-		textMode: true,
+		textMode: false,
 		repeater: {
 			enable: true,
 			times: 3

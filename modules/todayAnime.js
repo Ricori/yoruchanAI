@@ -1,5 +1,5 @@
-
 import Axios from 'axios';
+import replyText from '../replyTextConfig';
 
 const apiurl = 'https://app.anitama.net/guide/';
 
@@ -11,14 +11,14 @@ async function doSearch(date) {
 
     //console.log(date);
     if(!date) date = new Date().Format("yyyyMMdd");
-    let msg = "夜夜酱没能找到相关信息呢，可能是网络接口被玩坏了T T";
+    let msg = replyText.serchError;
 
     await Axios.get(apiurl + date).then(
         ret =>  {
             if (ret.status == 200) {
                 let data = ret.data.data;
                 let list = data.list;
-                msg = '夜夜酱已经找到' + date + '的番剧日程啦：\n';
+                msg = replyText.serchScheduleOk(date);
 
                 list.forEach(fj => {
                     msg += '[' + fj.title + '][' + fj.episode + ']\n';
@@ -26,10 +26,10 @@ async function doSearch(date) {
                     msg += fj.originStation + ' ' + fj.originTime + '\n';
 
                     if(!fj.playSite){
-                        msg += '国内暂无播放日程\n'
+                        msg += '国内无播放日程\n'
                     }else{
                         msg += fj.playSite + ' ' + fj.playTime + '\n';
-                        msg += '播放地址：' + fj.playUrl + '\n';
+                        //msg += '播放地址：' + fj.playUrl + '\n';
                     }
                     
                     msg += '\n'

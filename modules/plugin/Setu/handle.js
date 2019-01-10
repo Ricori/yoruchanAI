@@ -1,6 +1,7 @@
-import config from '../../../config';
 import CQ from '../../core/CQcode';
 import Setu from './setu';
+import config from '../../../config';
+import replyText from '../../../replyTextConfig';
 
 const setting = config.yuruConfig;
 
