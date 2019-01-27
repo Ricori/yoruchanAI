@@ -179,10 +179,10 @@ async function privateAndAtMsg(e, context) {
 			replyMsg(context, replyText.notAtSerchMode, true);
 	} else if(hasText("销量") && hasText("番")){
 		//番剧销量查询
-		let time = '2018-10';
+		let time = '2019-01';
+		if(hasText("10月")) time = '2018-10';
 		if(hasText("7月")) time = '2018-07';
 		if(hasText("4月")) time = '2018-04';
-		if(hasText("1月")) time = '2019-01';
 		e.stopPropagation();
 		await animeSale(time).then(
 			ret => { replyMsg(context, ret) }

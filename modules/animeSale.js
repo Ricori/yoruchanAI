@@ -7,7 +7,7 @@ import replyText from '../replyTextConfig';
  */
 async function doSearch(time) {
 
-    if(!time) time = '2018-10';
+    if(!time) time = '2019-01';
 
     const apiurl = 'https://mingzuozhibi.com/api/sakuras/key/Z-'+ time +'/discs?discColumns=todayPt,totalPt,guessPt,titlePc';
     let msg = replyText.serchError; //返回消息
