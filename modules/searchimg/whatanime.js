@@ -1,8 +1,8 @@
 import Axios from 'axios';
 import Request from 'request';
 import Qs from 'querystring';
-import CQ from './core/CQcode';
-import replyText from '../replyTextConfig';
+import CQ from '../core/CQcode';
+import replyText from '../../replyTextConfig';
 
 const cookies = [
 	"__cfduid=d25d7bd2b59809f974477d68548d4e3221531298009"

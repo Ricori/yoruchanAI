@@ -2,7 +2,7 @@ import CQWebsocket from 'cq-websocket';
 
 //核心模块
 import CQ from './modules/core/CQcode';
-import Yurusql from './modules/core/Yurusql';
+//import Yurusql from './modules/core/Yurusql';
 import Logger from './modules/core/Logger';
 
 //配置文件
@@ -13,9 +13,8 @@ import replyText from './replyTextConfig';
 import {getTime , getDateFromText} from './modules/utils/dateUtil';
 
 //搜图模块
-import saucenao from './modules/saucenao';
-import { snDB } from './modules/saucenao';
-import whatanime from './modules/whatanime';
+import searchImg from './modules/searchImg';
+import { snDB } from './modules/searchimg/saucenao';
 
 //其他模块
 import animeSale from './modules/animeSale';
@@ -25,7 +24,7 @@ import todayAnime from './modules/todayAnime';
 import setuHandle from './modules/plugin/Setu/handle';
 
 //初始化数据库
-Yurusql.sqlInitialize();
+//Yurusql.sqlInitialize();
 
 //全局常量
 const setting = config.yuruConfig;
@@ -80,9 +79,9 @@ bot.on('message.private', (e, context) => {
 //监听器
 if (setting.debug) {
 	//私聊
-	bot.on('message.private', debugRrivateAndAtMsg);
+	bot.on('message.private', debugPrivateAndAtMsg);
 	//群组@
-	bot.on('message.group.@me', debugRrivateAndAtMsg);
+	bot.on('message.group.@me', debugPrivateAndAtMsg);
 } else {
 	//私聊
 	bot.on('message.private', privateAndAtMsg);
@@ -119,7 +118,7 @@ bot.connect();
 
 
 //调试模式
-function debugRrivateAndAtMsg(e, context) {
+function debugPrivateAndAtMsg(e, context) {
 	if (context.user_id != setting.admin) {
 		e.stopPropagation();
 		return replyText.debugMode;
@@ -133,12 +132,10 @@ function debugRrivateAndAtMsg(e, context) {
 function commonHandle(e, context) {
 	//黑名单检测
 	if (Logger.checkBan(context.user_id, context.group_id)) return false;
-
 	//插件
 	if (setting.setu.enable) {
 		if (setuHandle(context,bot,replyMsg,logger)) return false;
 	}
-
 	return true;
 }
 
@@ -162,10 +159,10 @@ async function privateAndAtMsg(e, context) {
 			condition: function(){ return hasImage(context.message) },
 			effect: function(){
 				e.stopPropagation();
-				searchImg(context);
+				searchImg(context, -1, replyMsg, logger);
 			}
 		},
-		{
+		{	//开启搜图模式
 			condition: function(){ return hasText("开启搜图模式") },
 			effect: function(){
 				e.stopPropagation();
@@ -177,7 +174,7 @@ async function privateAndAtMsg(e, context) {
 				else replyMsg(context, replyText.alreadyInSerchMode, true);
 			}
 		},
-		{
+		{	//关闭搜图模式
 			condition: function(){ return hasText("关闭搜图模式") },
 			effect: function(){
 				e.stopPropagation();
@@ -210,12 +207,14 @@ async function privateAndAtMsg(e, context) {
 				);
 			}
 		},
+
 		/***
 		{
 			condition: function(){ return false },
 			effect: function(){ }
 		},
 		***/
+
 	];
 
 	for(let i = 0; i < handle.length; i++) {
@@ -230,39 +229,12 @@ async function privateAndAtMsg(e, context) {
 //群组消息处理
 function groupMsg(e, context) {
 	if (!commonHandle(e, context)) return;
-
 	let { group_id, user_id } = context;
 
-	//搜图模式检测
-	let smStatus = logger.smStatus(group_id, user_id);
-	if (smStatus) {
-		//获取搜图模式下的搜图参数
-		function getDB() {
-			let cmd = /^(all|pixiv|danbooru|book|anime)$/.exec(context.message);
-			if (cmd) return snDB[cmd[1]] || -1;
-			return -1;
-		}
-
-		//切换搜图模式
-		let cmdDB = getDB();
-		if (cmdDB !== -1) {
-			logger.smSetDB(group_id, user_id, cmdDB);
-			smStatus = cmdDB;
-			replyMsg(context, `夜夜酱现在已经切换至[${context.message}]限定搜索模式啦`)
-		}
-
-		//有图片则搜图
-		if (hasImage(context.message)) {
-			//重置搜图TimeOut时间
-			logger.smSwitch(group_id, user_id, true, () => {
-				replyMsg(context, replyText.serchModeAutoOff, true);
-			});
-			e.stopPropagation();
-			searchImg(context, smStatus);
-		}
-	} else if (setting.repeater.enable) {  
-		//复读机功能
-
+	if(switchSearchMode(context)) return;
+	
+	//复读机功能
+	if (setting.repeater.enable) {  
 		//随机复读，rptLog得到当前复读次数
 		if (logger.rptLog(group_id, user_id, context.message) >= setting.repeater.times) {
 			logger.rptDone(group_id);
@@ -274,129 +246,36 @@ function groupMsg(e, context) {
 	}
 }
 
-
-/**
- * 搜图
- *
- * @param {object} context
- * @param {number} [customDB=-1]
- * @returns
- */
-async function searchImg(context, customDB = -1) {
-	//提取参数
-	function hasCommand(cmd) {
-		return context.message.search("限定" + cmd) !== -1;
-	}
-
-	//决定搜索库
-	let db = snDB.all;
-	if (customDB === -1) {
-		if (hasCommand("pixiv")) db = snDB.pixiv;
-		else if (hasCommand("danbooru")) db = snDB.danbooru;
-		else if (hasCommand("book")) db = snDB.book;
-		else if (hasCommand("anime")) db = snDB.anime;
-		else if (!context.group_id && !context.discuss_id) {
-			//私聊搜图模式
-			let sdb = logger.smStatus(0, context.user_id);
-			if (sdb) {
-				db = sdb;
-				logger.smSwitch(0, context.user_id, false);
-			}
+function switchSearchMode(context){
+	let { group_id, user_id } = context;
+	//搜图模式检测
+	let smStatus = logger.smStatus(group_id, user_id);
+	if (smStatus) {
+		//获取搜图模式下的搜图参数
+		function getDB() {
+			let cmd = /^(all|pixiv|danbooru|book|anime)$/.exec(context.message);
+			if (cmd) return snDB[cmd[1]] || -1;
+			return -1;
 		}
-	} else db = customDB;
-
-	//得到图片链接并搜图
-	let msg = context.message;
-	let imgs = getImgs(msg);
-	for (let img of imgs) {
-		if (hasCommand("get-url")) replyMsg(context, img.url);
-		else {
-			//获取缓存
-			let hasCache = false;
-			let runCache = Yurusql.isEnable() && !hasCommand("purge");
-			if (runCache) {
-				let sql = new Yurusql();
-				let cache = false;
-				await sql.getCache(img.file, db).then(ret => {
-					cache = ret;
-				});
-				sql.close();
-
-				//如果有缓存
-				if (cache) {
-					hasCache = true;
-					for (let cmsg of cache) {
-						cmsg = new String(cmsg);
-						if (cmsg.indexOf('[CQ:share') !== -1) {
-							cmsg = cmsg.replace('content=', 'content=&#91;缓存&#93; ');
-						} else if (cmsg.indexOf('WhatAnime') !== -1) {
-							cmsg = cmsg.replace('&#91;', '&#91;缓存&#93; &#91;');
-						}
-						replyMsg(context, cmsg);
-					}
-				}
-			}
-
-			if (!hasCache) {
-				//检查搜图次数
-				if (!logger.canSearch(context.user_id, setting.searchLimit)) {
-					replyMsg(context, replyText.searchLimit);
-					return;
-				}
-				//开始搜索
-				saucenao(img.url, db, hasCommand("debug")).then(async ret => {
-					let success = ret.success; //如果有未成功的则不缓存
-
-					replyMsg(context, ret.msg);
-					replyMsg(context, ret.warnMsg);
-
-					//如果需要缓存
-					let needCacheMsgs;
-					if (Yurusql.isEnable()) {
-						needCacheMsgs = [];
-						if (ret.msg.length > 0) needCacheMsgs.push(ret.msg);
-					}
-
-					//搜番
-					if (db == 21 || ret.msg.indexOf("anidb.net") !== -1) {
-						await whatanime(img.url, hasCommand("debug")).then(waRet => {
-							if (!waRet.success) success = false; //如果搜番有误也视作不成功
-							replyMsg(context, waRet.msg);
-							if (Yurusql.isEnable() && waRet.msg.length > 0) needCacheMsgs.push(waRet.msg);
-						});
-					}
-
-					//将需要缓存的信息写入数据库
-					if (Yurusql.isEnable() && success) {
-						let sql = new Yurusql();
-						await sql.addCache(img.file, db, needCacheMsgs);
-						sql.close();
-					}
-				});
-			}
+		//切换搜图模式
+		let cmdDB = getDB();
+		if (cmdDB !== -1) {
+			logger.smSetDB(group_id, user_id, cmdDB);
+			smStatus = cmdDB;
+			replyMsg(context, `Now in the '[${context.message}]' limited search mode.`)
 		}
+		//有图片则搜图
+		if (hasImage(context.message)) {
+			//重置搜图TimeOut时间
+			logger.smSwitch(group_id, user_id, true, () => {
+				replyMsg(context, replyText.serchModeAutoOff, true);
+			});
+			e.stopPropagation();
+			searchImg(context, smStatus, replyMsg, logger);
+		}
+		return true;
 	}
-}
-
-
-/**
- * 从消息中提取图片
- *
- * @param {string} msg
- * @returns 图片URL数组
- */
-function getImgs(msg) {
-	let reg = /\[CQ:image,file=([^,]+),url=([^\]]+)\]/g;
-	let result = [];
-	let search = reg.exec(msg);
-	while (search) {
-		result.push({
-			file: search[1],
-			url: search[2]
-		});
-		search = reg.exec(msg);
-	}
-	return result;
+	return false;
 }
 
 

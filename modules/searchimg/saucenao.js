@@ -1,8 +1,8 @@
 import Axios from 'axios';
 import nhentai from './nhentai';
-import CQ from './core/CQcode';
-import config from '../config';
-import replyText from '../replyTextConfig';
+import CQ from '../core/CQcode';
+import config from '../../config';
+import replyText from '../../replyTextConfig';
 
 const hosts = ["saucenao.com"];
 
