@@ -146,61 +146,84 @@ function commonHandle(e, context) {
 //私聊以及群组@的处理
 async function privateAndAtMsg(e, context) {
 	if (!commonHandle(e, context)) return;
-
 	let { group_id, user_id } = context;
-
 	function hasText(text) {
 		return context.message.search(text) !== -1;
 	}
-	
-	if(hasText("--")){
-		//管理命令
-		return;
-	} else if (hasText("help")){
-		//帮助文本
-		return replyText.helptext;
-	} else if (hasImage(context.message)) {
-		//进行搜图
-		e.stopPropagation();
-		searchImg(context);
-	} else if(hasText("开启搜图模式")){
-		e.stopPropagation();
-		if (logger.smSwitch(group_id, user_id, true, 
-			() => {replyMsg(context, replyText.serchModeAutoOff, true)})
-		){
-			replyMsg(context, replyText.serchModeOn, true);
+	if(hasText("--")) return;
+	let handle = [
+		{	//帮助文本
+			condition: function(){ return hasText("help") },
+			effect: function(){
+				return replyText.helptext;
+			}
+		},
+		{	//进行搜图
+			condition: function(){ return hasImage(context.message) },
+			effect: function(){
+				e.stopPropagation();
+				searchImg(context);
+			}
+		},
+		{
+			condition: function(){ return hasText("开启搜图模式") },
+			effect: function(){
+				e.stopPropagation();
+				if (logger.smSwitch(group_id, user_id, true, 
+					() => {replyMsg(context, replyText.serchModeAutoOff, true)})
+				){
+					replyMsg(context, replyText.serchModeOn, true);
+				}
+				else replyMsg(context, replyText.alreadyInSerchMode, true);
+			}
+		},
+		{
+			condition: function(){ return hasText("关闭搜图模式") },
+			effect: function(){
+				e.stopPropagation();
+				if (logger.smSwitch(group_id, user_id, false))
+					replyMsg(context, replyText.serchModeOff, true)
+				else
+					replyMsg(context, replyText.notAtSerchMode, true);
+			}
+		},
+		{	//新番销量
+			condition: function(){ return hasText("销量") && hasText("番") },
+			effect: async function(){
+				let time = '2019-04';
+				if(hasText("1月")) time = '2019-01';
+				if(hasText("10月")) time = '2018-10';
+				if(hasText("7月")) time = '2018-07';
+				e.stopPropagation();
+				await animeSale(time).then(
+					ret => { replyMsg(context, ret) }
+				);
+			}
+		},
+		{	//番剧日程
+			condition: function(){ return /(.*?)[有]?什么番/.exec(context.message) },
+			effect: async function(){
+				let riqi = /(.*?)[有]?什么番/.exec(context.message)[1];
+				let date = getDateFromText(riqi);
+				await todayAnime(date.format('yyyyMMdd')).then(
+					ret => { replyMsg(context, ret) }
+				);
+			}
+		},
+		/***
+		{
+			condition: function(){ return false },
+			effect: function(){ }
+		},
+		***/
+	];
+
+	for(let i = 0; i < handle.length; i++) {
+		if(handle[i].condition()){
+			return handle[i].effect();
 		}
-		else replyMsg(context, replyText.alreadyInSerchMode, true);
-	} else if(hasText("关闭搜图模式")){
-		e.stopPropagation();
-		if (logger.smSwitch(group_id, user_id, false))
-			replyMsg(context, replyText.serchModeOff, true)
-		else
-			replyMsg(context, replyText.notAtSerchMode, true);
-	} else if(hasText("销量") && hasText("番")){
-		//番剧销量查询
-		let time = '2019-04';
-		if(hasText("1月")) time = '2019-01';
-		if(hasText("10月")) time = '2018-10';
-		if(hasText("7月")) time = '2018-07';
-		e.stopPropagation();
-		await animeSale(time).then(
-			ret => { replyMsg(context, ret) }
-		);
-	} else if(/(.*?)[有]?什么番/.exec(context.message)){
-		//番剧日程查询
-		let riqi = /(.*?)[有]?什么番/.exec(context.message)[1];
-		let date = getDateFromText(riqi);
-		await todayAnime(date.format('yyyyMMdd')).then(
-			ret => { replyMsg(context, ret) }
-		);
-	} else if(hasText("新年礼物")){
-		let txt = '最新12月合集\nhttps://pan.baidu.com/s/1w-xXd94oNfIzo_F9Ax1EsQ 提取码: 5wzw';
-		replyMsg(context, txt, true);
-	} else {
-		//其他指令
-		return replyText.defaultReply();
 	}
+	return replyText.defaultReply();
 }
 
 
