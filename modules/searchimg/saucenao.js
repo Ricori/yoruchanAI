@@ -1,12 +1,12 @@
-
 import Axios from 'axios';
 import nhentai from './nhentai';
-import CQ from './core/CQcode';
-import config from '../config';
+import CQ from '../core/CQcode';
+import config from '../../config';
+import replyText from '../../replyTextConfig';
 
 const hosts = ["saucenao.com"];
 
-let hostsI = 0;
+//let hostsI = 0;
 
 const snDB = {
 	all: 999,
@@ -25,9 +25,10 @@ const snDB = {
  * @returns Promise 返回消息、返回提示
  */
 async function doSearch(imgURL, db, debug = false) {
-	let hostIndex = (hostsI++) % hosts.length; //决定当前使用的host
+	//let hostIndex = (hostsI++) % hosts.length; //决定当前使用的host
+	let hostIndex = 0;
 	let warnMsg = ""; //返回提示
-	let msg = "夜夜没能找到相关信息呢，可能是网络接口被玩坏了T T"; //返回消息
+	let msg = replyText.serchError; //返回消息
 	let success = false;
 
 	await getSearchResult(hosts[hostIndex], imgURL, db).then(async ret => {
@@ -75,19 +76,22 @@ async function doSearch(imgURL, db, debug = false) {
 				member_name, //作者
 				jp_name //本子名
 			} = result;
-			if (!title) title = (origURL.indexOf("anidb.net") === -1) ? "夜夜酱找到啦，" : "[AniDB]";
+			if (!title) title = (origURL.indexOf("anidb.net") === -1) ? replyText.serchOk : "[AniDB]";
 
 			if (member_name && member_name.length > 0)
 				title = `「${title}」/「${member_name}」`;
 
+			/*
 			//剩余搜图次数
 			if (long_remaining < 20)
-				warnMsg += CQ.escape(`saucenao[${hostIndex}]：夜夜酱发现主人24h内搜图次数仅剩${long_remaining}次了呢\n`);
+				warnMsg += CQ.escape(`saucenao：夜夜酱发现主人24h内搜图次数仅剩${long_remaining}次了呢\n`);
 			else if (short_remaining < 5)
-				warnMsg += CQ.escape(`saucenao[${hostIndex}]：夜夜酱发现主人30s内搜图次数仅剩${short_remaining}次了呢\n`);
+				warnMsg += CQ.escape(`saucenao：夜夜酱发现主人30s内搜图次数仅剩${short_remaining}次了呢\n`);
+			*/
+			
 			//相似度
-			if (similarity < 60)
-				warnMsg += CQ.escape(`很抱歉夜夜酱只为主人找到了相似度${similarity}%的图T T\n如果不是主人想要的，请尝试给夜夜看更清晰完整的图呢\n`);
+			if (similarity < 50)
+				warnMsg += CQ.escape(replyText.serchSimilarityLow);
 
 			//回复的消息
 			msg = CQ.share(url, `${title}相似度为${similarity}%`, origURL, thumbnail);
@@ -104,7 +108,7 @@ async function doSearch(imgURL, db, debug = false) {
 						msg = CQ.share(url, `[${similarity}%] ${jp_name}`, origURL, thumbnail);
 					} else {
 						success = false;
-						warnMsg += CQ.escape("夜夜酱无法在nhentai找到对应的本子T T\n可能是夜夜酱的nhentai接口坏掉了呢");
+						warnMsg += CQ.escape(replyText.nhentaiError);
 						msg = CQ.escape(jp_name);
 					}
 				})
@@ -116,7 +120,7 @@ async function doSearch(imgURL, db, debug = false) {
 	}).catch(e => {
 		console.error(`${new Date().toLocaleString()} [error] saucenao[${hostIndex}]\n${e.toString()}`);
 		//console.log(e);
-		if (e.response && e.response.status == 429) msg = `跟夜夜PY的saucenao[${hostIndex}]酱单位时间内已经不行了呢，等等再来吧`;
+		if (e.response && e.response.status == 429) msg = replyText.saucenaoLimit;
 	});
 
 	if (config.yuruConfig.debug) console.log(`${new Date().toLocaleString()} [saucenao][${hostIndex}]\n${msg}`);

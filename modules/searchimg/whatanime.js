@@ -1,8 +1,8 @@
 import Axios from 'axios';
 import Request from 'request';
 import Qs from 'querystring';
-
-import CQ from './core/CQcode';
+import CQ from '../core/CQcode';
+import replyText from '../../replyTextConfig';
 
 const cookies = [
 	"__cfduid=d25d7bd2b59809f974477d68548d4e3221531298009"
@@ -21,7 +21,7 @@ const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
  */
 async function doSearch(imgURL, debug = false) {
 	let cookieIndex = (cookieI++) % cookies.length; //决定当前使用的cookie
-	let msg = "夜夜没能找到相关信息呢，可能是网络接口被玩坏了T T"; //返回消息
+	let msg = replyText.serchError;
 	let success = false;
 
 	function appendMsg(str, needEsc = true) {
@@ -37,7 +37,7 @@ async function doSearch(imgURL, debug = false) {
 
 		let retcode = ret.code;
 		if (retcode == 413) {
-			msg = "跟夜夜PY的WhatAnime酱说图片体积太大啦，小一点才能受得了哦"
+			msg = replyText.waPicTooLarge;
 			return;
 		}
 
@@ -47,7 +47,7 @@ async function doSearch(imgURL, debug = false) {
 		let expire = ret.expire; //次数重置时间
 		if (ret.docs.length == 0) {
 			console.log(`${new Date().toLocaleString()} [out] whatanime[${cookieIndex}]:${retcode}\n${JSON.stringify(ret)}`)
-			msg = `跟夜夜PY的WhatAnime酱现在已经受不了了呢，请等待${expire}秒吧`;
+			msg = replyText.waLimit;
 			return;
 		}
 
@@ -77,9 +77,13 @@ async function doSearch(imgURL, debug = false) {
 
 			//构造返回信息
 			msg = CQ.escape(`相似度${diff}% \n该截图出自第${episode}集的${posMin < 10 ? "0" : ""}${posMin}:${posSec < 10 ? "0" : ""}${posSec}`);
+			
+			/*
 			if (quota <= 5) {
 				appendMsg(`cookie[${cookieIndex}]：注意，${expire}秒内搜索次数仅剩${quota}次`);
 			}
+			*/
+
 			appendMsg(img, false);
 			appendMsg(romaName);
 			if (jpName != romaName) appendMsg(jpName);
@@ -93,7 +97,7 @@ async function doSearch(imgURL, debug = false) {
 			appendMsg(`类型：${type}`);
 			appendMsg(`开播：${start}`);
 			if (end.length > 0) appendMsg(`完结：${end}`);
-			if (isR18) appendMsg("请注意该番是R18哦");
+			if (isR18) appendMsg(replyText.r18warn);
 
 			success = true;
 		});

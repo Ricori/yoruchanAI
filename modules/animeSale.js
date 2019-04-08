@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import replyText from '../replyTextConfig';
 
 /**
  * 名作之壁搜索
@@ -6,10 +7,10 @@ import Axios from 'axios';
  */
 async function doSearch(time) {
 
-    if(!time) time = '2018-10';
+    if(!time) time = '2019-01';
 
     const apiurl = 'https://mingzuozhibi.com/api/sakuras/key/Z-'+ time +'/discs?discColumns=todayPt,totalPt,guessPt,titlePc';
-    let msg = "夜夜没能找到相关信息呢，可能是网络接口被玩坏了T T"; //返回消息
+    let msg = replyText.serchError; //返回消息
 
     //console.log(apiurl);
 

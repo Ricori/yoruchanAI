@@ -15,7 +15,7 @@ const config = {
 		autoAddFriend: true,
 		autoAddGroup: false,
 		searchLimit: 30,
-		textMode: true,
+		textMode: false,
 		repeater: {
 			enable: true,
 			times: 3
