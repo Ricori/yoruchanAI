@@ -150,7 +150,7 @@ async function privateAndAtMsg(e, context) {
 	if(hasText("--")) return;
 	let handle = [
 		{	//帮助文本
-			condition: function(){ return hasText("help") },
+			condition: function(){ return hasText("help") || hasText("帮助") },
 			effect: function(){
 				return replyText.helptext;
 			}
