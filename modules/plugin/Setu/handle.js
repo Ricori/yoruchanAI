@@ -5,9 +5,7 @@ import replyText from '../../../replyTextConfig';
 
 const setting = config.yuruConfig;
 
-//是否在发色图
-let setutime = false;
-let setumsg;
+let setulog = {g:[],u:[]};
 
 /**
  * 发送色图
@@ -22,19 +20,27 @@ function sendSetu(context,bot,replyMsg,logger) {
 	const setuSetting = setting.setu;
 
 	if (context.message.search('撤回') !== -1) {
-		//在色图time撤回色图
-		if(setutime){
-			if (setumsg && setumsg.data && setumsg.data.message_id){
-				bot('delete_msg', {message_id: setumsg.data.message_id});
+		if (context.group_id) {
+			if(setulog.g[context.group_id]){
+				if(setulog.g[context.group_id].now == true && setulog.g[context.group_id].msg){
+					bot('delete_msg', {message_id: setulog.g[context.group_id].msg.data.message_id});
+					setulog.g[context.group_id] = null;
+				}
 			}
-			setutime = false;
+		}else{
+			if(setulog.u[context.user_id]){
+				if(setulog.u[context.user_id].now == true && setulog.u[context.user_id].msg){
+					bot('delete_msg', {message_id: setulog.u[context.user_id].msg.data.message_id});
+					setulog.u[context.user_id] = null;
+				}
+			}
 		}
 
 		return true;
 	}
 
-	if (/([我想要一份快发].*[色h]图)/.exec(context.message)) {
-		setutime = true;
+	if (/([我想要一份快发].*[色h瑟]图)/.exec(context.message)) {
+		let log;
 
 		//普通群
 		let limit = {
@@ -53,11 +59,23 @@ function sendSetu(context,bot,replyMsg,logger) {
 				replyMsg(context, replyText.refuse);
 				return true;
 			}
+
+			setulog.g[context.group_id] = {
+				now : true,
+				msg : undefined
+			}
+			log = setulog.g[context.group_id];
+
 		} else {
 			if (!setuSetting.allowPM) {
 				replyMsg(context, replyText.refuse);
 				return true;
 			}
+			setulog.u[context.user_id] = {
+				now : true,
+				msg : undefined
+			}
+			log = setulog.u[context.user_id];
 			limit.cd = 0; //私聊无cd
 		}
 
@@ -68,13 +86,18 @@ function sendSetu(context,bot,replyMsg,logger) {
 
 		Setu.get().then(ret => {
 			replyMsg(context, CQ.img(`http://127.0.0.1:60233/?key=${Setu.pxSafeKey}&url=${ret.file}`)).then(r => {
-				setutime = true;
-				setumsg = r;
-				if (delTime > 0) setTimeout(() => {
-					if (r && r.data && r.data.message_id) bot('delete_msg', {
-						message_id: r.data.message_id
-					});
-				}, delTime * 1000);
+				log.now = true;
+				log.msg = r;
+				if (delTime > 0){
+					setTimeout(() => {
+						if (r && r.data && r.data.message_id) bot('delete_msg', {
+							message_id: r.data.message_id
+						});
+					}, delTime * 1000)
+				};
+				setTimeout(() => {
+					log = null;
+				}, 123 * 1000);
 			}).catch(() => {
 				console.log(`${new Date().toLocaleString()} [error] delete msg`);
 			});

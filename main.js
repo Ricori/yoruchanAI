@@ -70,7 +70,7 @@ bot.on('message.private', (e, context) => {
 		search = /--ban-([ug])=([0-9]+)/.exec(context.message);
 		if (search) {
 			Logger.ban(search[1], parseInt(search[2]));
-			replyMsg(context, `把不听话的${search[1]=='u'?'用户':'群组'}${search[1]}封掉啦`);
+			replyMsg(context, `已经把坏孩子${search[1]=='u'?'用户':'群组'}${search[1]}关进小黑屋了`);
 			return;
 		}
 	}
@@ -179,10 +179,10 @@ async function privateAndAtMsg(e, context) {
 			replyMsg(context, replyText.notAtSerchMode, true);
 	} else if(hasText("销量") && hasText("番")){
 		//番剧销量查询
-		let time = '2019-01';
+		let time = '2019-04';
+		if(hasText("1月")) time = '2019-01';
 		if(hasText("10月")) time = '2018-10';
 		if(hasText("7月")) time = '2018-07';
-		if(hasText("4月")) time = '2018-04';
 		e.stopPropagation();
 		await animeSale(time).then(
 			ret => { replyMsg(context, ret) }
