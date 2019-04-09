@@ -54,7 +54,7 @@ bot.on('message.private', (e, context) => {
 						type: "invite",
 						approve: true
 					});
-					replyMsg(context, `夜夜酱已成功进入群${context2.group_id}(｀・ω・´)`);
+					replyMsg(context, `夜夜酱已成功进入群${context2.group_id}`);
 					return true;
 				}
 				return false;
@@ -152,7 +152,7 @@ async function privateAndAtMsg(e, context) {
 		{	//帮助文本
 			condition: function(){ return hasText("help") || hasText("帮助") },
 			effect: function(){
-				return replyText.helptext;
+				replyMsg(context, replyText.helptext, false);
 			}
 		},
 		{	//进行搜图
@@ -219,10 +219,13 @@ async function privateAndAtMsg(e, context) {
 
 	for(let i = 0; i < handle.length; i++) {
 		if(handle[i].condition()){
-			return handle[i].effect();
+			handle[i].effect();
+			return;
 		}
 	}
-	return replyText.defaultReply();
+
+	replyMsg(context, replyText.defaultReply(), false);
+	return;
 }
 
 
