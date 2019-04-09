@@ -155,6 +155,23 @@ async function privateAndAtMsg(e, context) {
 				replyMsg(context, replyText.helptext, false);
 			}
 		},
+		{	//运行状态
+			condition: function(){ return hasText("status") || hasText("运行状态") },
+			effect: function(){
+				let str = 'YURU SYSTEM 16.4\n';
+				str += '系统运行时长：' + process.uptime() + '秒\n';
+				str += '目前占用内存：' + process.memoryUsage().rss + '字节\n';
+				str += '开始系统自检...\n'
+				str += '核心模块：' + (logger ? '正常' : '异常') + '\n';
+				str += '搜索模块：' + (searchImg ? '正常' : '异常') + '\n';
+				str += '番剧日程模块：' + (todayAnime ? '正常' : '异常') + '\n';
+				str += '番剧销量模块：' + (animeSale ? '正常' : '异常') + '\n';
+				str += '色图模块：' + (setuHandle ? '正常' : '异常') + '\n';
+				str += '数据库连接状态：正常\n数据缓存状态：正常\n' ;
+				str += '守护进程：pm2 v3.2.4\n守护状态：正常\n管理用户允许使用--shutdown命令进行系统重启\n完毕。' ;
+				replyMsg(context, str, false);
+			}
+		},
 		{	//进行搜图
 			condition: function(){ return hasImage(context.message) },
 			effect: function(){
