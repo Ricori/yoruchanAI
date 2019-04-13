@@ -38,8 +38,8 @@ async function searchVideo(fh,context) {
                             let hash1 = data.result.content[0].infohash;
                             let hash2 = data.result.content[1].infohash;
                             let str = '车名：' + title + '\n出厂时间：' + time + '\n车时：' + duration;
-                            str += '\n提车渠道1（大小' + bytesToSize(size1) + '字节）：\n' + hash1;
-                            str += '\n提车渠道2（大小' + bytesToSize(size2) + '字节）：\n' + hash2;
+                            str += '\n提车渠道1（大小' + bytesToSize(size1) + '）：\n' + hash1;
+                            str += '\n提车渠道2（大小' + bytesToSize(size2) + '）：\n' + hash2;
                             msg = str;
                         }else{
                             let hash = data.result.content[0].infohash;
@@ -64,7 +64,7 @@ async function searchVideo(fh,context) {
 function bytesToSize(bytes) {
     let sizes = ['B','KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
     let i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, i)) + sizes[i];                                                                                                            //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+    return (bytes / Math.pow(1024, i)).toPrecision(3) + sizes[i];                                                                                                            //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
 }
 
 
