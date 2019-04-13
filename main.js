@@ -19,6 +19,7 @@ import { snDB } from './modules/searchimg/saucenao';
 //其他模块
 import animeSale from './modules/animeSale';
 import todayAnime from './modules/todayAnime';
+import searchVideo from './modules/searchVideo';
 
 //插件模块
 import setuHandle from './modules/plugin/Setu/handle';
@@ -209,7 +210,7 @@ async function privateAndAtMsg(e, context) {
 				if(hasText("10月")) time = '2018-10';
 				if(hasText("7月")) time = '2018-07';
 				e.stopPropagation();
-				await animeSale(time).then(
+				animeSale(time).then(
 					ret => { replyMsg(context, ret) }
 				);
 			}
@@ -219,12 +220,20 @@ async function privateAndAtMsg(e, context) {
 			effect: async function(){
 				let riqi = /(.*?)[有]?什么番/.exec(context.message)[1];
 				let date = getDateFromText(riqi);
-				await todayAnime(date.format('yyyyMMdd')).then(
+				todayAnime(date.format('yyyyMMdd')).then(
 					ret => { replyMsg(context, ret) }
 				);
 			}
 		},
-
+		{
+			condition: function(){ return /发车([a-zA-Z]{3,4}-[0-9]{3,4}$)/.exec(context.message)},
+			effect: async function(){ 
+				let fh = /([a-zA-Z]{3,4}-[0-9]{3,4}$)/.exec(context.message)[1];
+				searchVideo(fh,context).then(
+					ret => { replyMsg(context, ret) }
+				);
+			}
+		},
 		/***
 		{
 			condition: function(){ return false },

@@ -20,9 +20,9 @@ const replyText = {
     serchSimilarityLow : '没有找到更相似的图片真是对不起。。才...才不是道歉呢！\n' + 
         '总之主人寻找的图片可能并未被各大网站收录，或是图片不完整/无关部分过多，不是夜夜酱的问题啦！\n',
     nhentaiError : '居然有博览群本的夜夜酱找不到的本子？！一定是网络菌的问题（确信',  //nheitai出现错误
-    saucenaoLimit : '弟弟saucenao酱这段时间已经不行了，真是没用呢~',  //saucenao限制
-    waPicTooLarge : '弟弟whatAnime酱受不了体积大的图片，真是没用呢~', //whatAnime图片大小限制
-    waLimit : '弟弟whatAnime酱已经受不了，真是没用呢~', //whatAnime搜索限制
+    saucenaoLimit : '弟弟S酱这段时间已经不行了，真是没用呢~',  //saucenao限制
+    waPicTooLarge : '弟弟W酱受不了体积大的图片，真是没用呢~', //whatAnime图片大小限制
+    waLimit : '弟弟W酱已经受不了，真是没用呢~', //whatAnime搜索限制
     r18warn : '你这个变态狗，H狗，淫乱狗！居然让夜夜酱找这种东西！！',  //R18提醒
 
     //番剧日程
@@ -35,6 +35,7 @@ const replyText = {
     //拒绝服务
     debugMode : '维护什么的真是讨厌啊！！！！！',  //debug模式对普通用户回复
     refuse : '你是谁啊？！快滚啊！',    //拒绝为黑名单用户服务
+    limitGroup : '主人没有允许的话，是不会帮你找东西的哦..'  //拒绝为非白名单群服务
 }
 
 //帮助文本
