@@ -42,8 +42,13 @@ async function searchVideo(fh,context) {
                             str += '\n提车渠道2（大小' + bytesToSize(size2) + '）：\n' + hash2;
                             msg = str;
                         }else{
-                            let hash = data.result.content[0].infohash;
-                            let str = String('找不到完全一样的车啊！给你一辆差不多的车看看吧：\n' + hash);
+                            let hash1 = data.result.content[0].infohash;
+                            let hash2 = data.result.content[3].infohash;
+                            let size1 = data.result.content[0].content_size;
+                            let size2 = data.result.content[3].content_size;
+                            let str = String('找到车了，但是没有车辆详细信息，主人自己去验车吧：');
+                            str += '\n提车渠道1（大小' + bytesToSize(size1) + '）：\n' + hash1;
+                            str += '\n提车渠道2（大小' + bytesToSize(size2) + '）：\n' + hash2;
                             msg = str;
                         }
                     }else{

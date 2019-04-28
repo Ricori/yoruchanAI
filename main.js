@@ -226,9 +226,9 @@ async function privateAndAtMsg(e, context) {
 			}
 		},
 		{
-			condition: function(){ return /发车([a-zA-Z]{3,4}-[0-9]{3,4}$)/.exec(context.message)},
+			condition: function(){ return /发车([a-zA-Z]{2,4}-[0-9]{3,4}$)/.exec(context.message)},
 			effect: async function(){ 
-				let fh = /([a-zA-Z]{3,4}-[0-9]{3,4}$)/.exec(context.message)[1];
+				let fh = /([a-zA-Z]{2,4}-[0-9]{3,4}$)/.exec(context.message)[1];
 				searchVideo(fh,context).then(
 					ret => { replyMsg(context, ret) }
 				);
