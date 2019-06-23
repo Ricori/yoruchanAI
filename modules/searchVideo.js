@@ -1,9 +1,9 @@
 import Axios from 'axios';
 import replyText from '../replyTextConfig';
 
-const apiurl = 'https://www.cilimao.cc/api/search?size=10&sortDirections=desc&page=0&word=';
-const cookies = '__cfduid=dd53cf20e3473b4012b8911acad08d82a1555163021;searchLimited=0';
-const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36";
+const apiurl = 'https://www.cilimao.news/api/search?size=10&sortDirections=desc&page=0&word=';
+const cookies = '_ga=GA1.2.1329054468.1560256058; _gid=GA1.2.107345005.1560256058; _gat_gtag_UA_140660799_1=1; noticationShow=1_1; weixinMPShow=1_1; Hm_lvt_26b7094a5a98e2475533e456a977851f=1560256058; Hm_lpvt_26b7094a5a98e2475533e456a977851f=1560256058;searchLimited=0';
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36";
 
 /**
  * 搜视频
@@ -22,7 +22,7 @@ async function searchVideo(fh,context) {
 				"accept": 'application/json, text/javascript, */*; q=0.01',
 				"content-type": "application/x-www-form-urlencoded; charset=UTF-8",
 				"cookie": cookies,
-				"referer": 'https://www.cilimao.cc',
+				"referer": 'https://www.cilimao.news/',
 				"user-agent": UA
 			}}).then(
             ret =>  {
@@ -34,18 +34,18 @@ async function searchVideo(fh,context) {
                             let time = data.card.work.release_time;
                             let duration = data.card.work.video_duration;
                             let size1 = data.result.content[0].content_size;
-                            let size2 = data.result.content[1].content_size;
+                            let size2 = data.result.content[1] ? data.result.content[1].content_size : 0;
                             let hash1 = data.result.content[0].infohash;
-                            let hash2 = data.result.content[1].infohash;
-                            let str = '车名：' + title + '\n出厂时间：' + time + '\n车时：' + duration;
+                            let hash2 = data.result.content[1] ? data.result.content[1].infohash : 'error';
+                            let str = `车名：${title}\n出厂时间：${time}\n车时：${duration}`;
                             str += '\n提车渠道1（大小' + bytesToSize(size1) + '）：\n' + hash1;
                             str += '\n提车渠道2（大小' + bytesToSize(size2) + '）：\n' + hash2;
                             msg = str;
                         }else{
                             let hash1 = data.result.content[0].infohash;
-                            let hash2 = data.result.content[3].infohash;
+                            let hash2 = data.result.content[3] ? data.result.content[3].infohash : 'error';
                             let size1 = data.result.content[0].content_size;
-                            let size2 = data.result.content[3].content_size;
+                            let size2 = data.result.content[3] ? data.result.content[3].content_size : 0;
                             let str = String('找到车了，但是没有车辆详细信息，主人自己去验车吧：');
                             str += '\n提车渠道1（大小' + bytesToSize(size1) + '）：\n' + hash1;
                             str += '\n提车渠道2（大小' + bytesToSize(size2) + '）：\n' + hash2;
