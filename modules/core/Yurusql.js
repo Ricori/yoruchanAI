@@ -16,7 +16,6 @@ function getDateSec() {
 	return Math.floor(Date.now() / 1000);
 }
 
-
 /**
  * Picfinder数据库
  *
@@ -37,7 +36,6 @@ class Yurusql {
 		});
 	}
 
-
 	/**
 	 * 关闭数据库连接
 	 * 
@@ -45,6 +43,22 @@ class Yurusql {
 	 */
 	close() {
 		this.mysql.end();
+	}
+
+	/**
+	 * 增加动画数据记录
+	 *
+	 * @param {Object} info 动画信息对象
+	 * @returns Promise
+	 * @memberof Yurusql
+	 */
+	addAnimeInfo(info) {
+		let mysql = this.mysql;
+		return co(function* () {
+			yield mysql.query(
+			'INSERT INTO `animeinfo` (`animeName`, `subtitleGroup`, `definition`, `lanauage`, `episode`, `date`, `magnet`, `size`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
+			[info.animeName, info.subtitleGroup, info.definition, info.lanauage,info.episode,info.date,info.magnet,info.size]);
+		});
 	}
 
 
@@ -93,6 +107,7 @@ class Yurusql {
 	 * @memberof Yurusql
 	 */
 	static async sqlInitialize() {
+		/*
 		if (isEnable && !hasInitialize) {
 			let test = new Yurusql();
 			await co(function* () {
@@ -101,6 +116,7 @@ class Yurusql {
 			});
 			hasInitialize = true;
 		}
+		*/
 	}
 
 	/**

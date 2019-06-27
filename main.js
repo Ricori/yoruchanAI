@@ -20,9 +20,14 @@ import { snDB } from './modules/searchimg/saucenao';
 import animeSale from './modules/animeSale';
 import todayAnime from './modules/todayAnime';
 import searchVideo from './modules/searchVideo';
+import searchAnime from './modules/serchAnime';
 
 //插件模块
 import setuHandle from './modules/plugin/Setu/handle';
+
+//本地代理服务器
+import Proxyf from './modules/core/Proxy'
+
 
 //初始化数据库
 //Yurusql.sqlInitialize();
@@ -98,7 +103,7 @@ bot.on('socket.connecting',
 	.on('socket.failed', 
 		(wsType, attempts) => console.log(`${getTime()} 连接失败[${wsType}]#${attempts}`))
 	.on('socket.error', 
-		(wsType, err) => console.log(`${getTime()} 连接错误[${wsType}]#${attempts}`))
+		(wsType, err) => console.log(`${getTime()} 连接错误[${wsType}]#${err}`))
 	.on('socket.connect', 
 		(wsType, sock, attempts) => {
 		console.log(`${getTime()} 连接成功[${wsType}]#${attempts}`);
@@ -146,7 +151,7 @@ async function privateAndAtMsg(e, context) {
 	if (!commonHandle(e, context)) return;
 	let { group_id, user_id } = context;
 	function hasText(text) {
-		return context.message.search(text) !== -1;
+		return context.message.search(text) != -1;
 	}
 	if(hasText("--")) return;
 	let handle = [
@@ -205,10 +210,10 @@ async function privateAndAtMsg(e, context) {
 		{	//新番销量
 			condition: function(){ return hasText("销量") && hasText("番") },
 			effect: async function(){
-				let time = '2019-04';
+				let time = '2019-07';
 				if(hasText("1月")) time = '2019-01';
-				if(hasText("10月")) time = '2018-10';
-				if(hasText("7月")) time = '2018-07';
+				if(hasText("4月")) time = '2019-04';
+				if(hasText("10月")) time = '2018-07';
 				e.stopPropagation();
 				animeSale(time).then(
 					ret => { replyMsg(context, ret) }
@@ -234,7 +239,15 @@ async function privateAndAtMsg(e, context) {
 				);
 			}
 		},
-		
+		{
+			condition: function(){ return /测试番剧搜索/.exec(context.message)},
+			effect: async function(){ 
+				searchAnime(context).then(
+					ret => { replyMsg(context, ret) }
+				);
+			}
+		},
+
 		/***
 		{
 			condition: function(){ return false },

@@ -85,7 +85,7 @@ function sendSetu(context,bot,replyMsg,logger) {
 		}
 
 		Setu.get().then(ret => {
-			replyMsg(context, CQ.img(`http://127.0.0.1:60233/?key=${Setu.pxSafeKey}&url=${ret.file}`)).then(r => {
+			replyMsg(context, CQ.img(`http://127.0.0.1:60233/?key=99887766&url=${ret.file}&type=setu`)).then(r => {
 				log.now = true;
 				log.msg = r;
 				if (delTime > 0){

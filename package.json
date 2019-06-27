@@ -7,11 +7,19 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["robot","QQ","yoruchan","anime","manka","comic"],
+  "keywords": [
+    "robot",
+    "QQ",
+    "yoruchan",
+    "anime",
+    "manka",
+    "comic"
+  ],
   "author": "takamichika",
   "license": "GPL-3.0",
   "dependencies": {
     "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.3",
     "co": "^4.6.0",
     "cq-websocket": "1.8.1",
     "esm": "3.0.82",
@@ -20,6 +28,7 @@
     "mysql-co": "0.0.4",
     "querystring": "^0.2.0",
     "random-seed": "^0.3.0",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7"
   }
 }
