@@ -240,9 +240,10 @@ async function privateAndAtMsg(e, context) {
 			}
 		},
 		{
-			condition: function(){ return /测试番剧搜索/.exec(context.message)},
+			condition: function(){ return /测试番剧搜索:(.*)/.exec(context.message)},
 			effect: async function(){ 
-				searchAnime(context).then(
+				let searchAnimeName = /测试番剧搜索:(.*)/.exec(context.message)[1];
+				searchAnime(context,searchAnimeName).then(
 					ret => { replyMsg(context, ret) }
 				);
 			}

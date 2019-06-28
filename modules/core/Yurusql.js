@@ -46,18 +46,52 @@ class Yurusql {
 	}
 
 	/**
-	 * 增加动画数据记录
+	 * 增加bangumi记录
+	 *
+	 * @param {Object} info 信息对象
+	 * @returns Promise
+	 * @memberof Yurusql
+	 */
+	addBangumi(info) {
+		let mysql = this.mysql;
+		return co(function* () {
+			yield mysql.query(
+			'REPLACE INTO `bangumilist` (`id`, `name`) VALUES (?, ?)', 
+			[info.id, info.name]);
+		});
+	}
+
+	/**
+	 * 增加字幕组记录
+	 *
+	 * @param {Object} info 信息对象
+	 * @returns Promise
+	 * @memberof Yurusql
+	 */
+	addSubtitleGroup(info) {
+		let mysql = this.mysql;
+		return co(function* () {
+			yield mysql.query(
+			'REPLACE INTO `subtitlegroup` (`id`, `sortid`,`name`) VALUES (?, ?, ?)', 
+			[info.id, info.sortid, info.name]);
+		});
+	}
+
+
+
+	/**
+	 * 增加动画资源记录
 	 *
 	 * @param {Object} info 动画信息对象
 	 * @returns Promise
 	 * @memberof Yurusql
 	 */
-	addAnimeInfo(info) {
+	addAnimeSourceInfo(info) {
 		let mysql = this.mysql;
 		return co(function* () {
 			yield mysql.query(
-			'INSERT INTO `animeinfo` (`animeName`, `subtitleGroup`, `definition`, `lanauage`, `episode`, `date`, `magnet`, `size`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
-			[info.animeName, info.subtitleGroup, info.definition, info.lanauage,info.episode,info.date,info.magnet,info.size]);
+			'INSERT INTO `animesouce` (`animeId`, `subtitleGroupId`, `definition`, `lanauage`, `episode`, `date`, `magnet`, `size`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
+			[info.animeId, info.subtitleGroupId, info.definition, info.lanauage,info.episode,info.date,info.magnet,info.size]);
 		});
 	}
 
