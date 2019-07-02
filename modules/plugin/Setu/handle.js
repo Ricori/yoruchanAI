@@ -1,11 +1,8 @@
 import CQ from '../../core/CQcode';
-import Setu from './setu';
 import config from '../../../config';
 import replyText from '../../../replyTextConfig';
 
 const setting = config.yuruConfig;
-
-let setulog = {g:[],u:[]};
 
 /**
  * 发送色图
@@ -15,10 +12,10 @@ let setulog = {g:[],u:[]};
  * @param {object} logger
  * @returns 是否发送
  */
-
 function sendSetu(context,bot,replyMsg,logger) {
 	const setuSetting = setting.setu;
-
+	let setulog = logger.getSetuLog();
+	
 	if (context.message.search('撤回') !== -1) {
 		if (context.group_id) {
 			if(setulog.g[context.group_id]){
@@ -39,7 +36,7 @@ function sendSetu(context,bot,replyMsg,logger) {
 		return true;
 	}
 
-	if (/([我想要一份快发].*[色h瑟]图)/.exec(context.message)) {
+	if (/([我想要一份快发].*(色|h|瑟)图)/.exec(context.message)) {
 		let log;
 
 		//普通群
@@ -84,8 +81,8 @@ function sendSetu(context,bot,replyMsg,logger) {
 			return;
 		}
 
-		Setu.get().then(ret => {
-			replyMsg(context, CQ.img(`http://127.0.0.1:60233/?key=99887766&url=${ret.file}&type=setu`)).then(r => {
+		Axios.get('https://api.lolicon.app/setu/zhuzhu.php').then(ret => {
+			replyMsg(context, CQ.img(`http://127.0.0.1:60233/?key=99887766&url=${ret.data.file}&type=setu`)).then(r => {
 				log.now = true;
 				log.msg = r;
 				if (delTime > 0){

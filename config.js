@@ -21,7 +21,7 @@ const config = {
 			times: 3
 		},
 		setu: {
-			enable: true,
+			enable: false,
 			allowPM: true,
 			cd: 5,
 			deleteTime: 0,

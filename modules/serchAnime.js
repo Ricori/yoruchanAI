@@ -15,7 +15,7 @@ async function searchAnime(context,searchAnimeName) {
 
     let url = escape('https://mikanani.me/Home/Search?page=1&searchstr=' + searchAnimeName);
     await Axios.get(`http://127.0.0.1:60233/?key=99887766&url=${url}&type=search`).then(
-        async function getSource(ret){
+        async function step1(ret){
             if (ret.status == 200) {
                 let $ = cheerio.load(ret.data);
 
@@ -34,7 +34,8 @@ async function searchAnime(context,searchAnimeName) {
 
                 console.log(`寻找到${bangumiList.length}部番剧...`);
                 if(bangumiList.length == 0){
-                    return '番剧搜索结果为0';
+                    msg = '夜夜酱没有找到相关的番剧，请主人尝试搜索关键词。'
+                    return;
                 }
 
                 for (let i = 0; i < bangumiList.length; i++) {
@@ -57,7 +58,7 @@ async function searchAnime(context,searchAnimeName) {
                 let chooseBangumi = bangumiList[chooseBangumiId];
                 let url2 = escape(chooseBangumi.url);
                 await Axios.get(`http://127.0.0.1:60233/?key=99887766&url=${url2}&type=search`).then(
-                    ret2 =>  {
+                    async function step1(ret2){
                         let $2 = cheerio.load(ret2.data);
 
                         let subtitleGroupList = [];
@@ -92,6 +93,7 @@ async function searchAnime(context,searchAnimeName) {
                             let sourceInfo = {
                                 animeId : chooseBangumi.id,
                                 subtitleGroupId : subtitleGroupList[i].id,
+                                subtitleSortId : subtitleGroupList[i].sortid,
                                 dates : [],
                                 titles : [],
                                 magnets : [],
@@ -106,42 +108,49 @@ async function searchAnime(context,searchAnimeName) {
                             sourceInfoList.push(sourceInfo);
                         });
 
-                        /*
-                        sourceInfoList.forEach(function getMoreSource(source) {
-                            if(source.titles.length = 15){
-                                console.log('sgid'+source.subtitleGroupId);
-                                Axios.post('https://mikanani.me/Home/ExpandEpisodeTable',{
-                                    bangumiId : source.animeId,
-                                    subtitleGroupId : source.subtitleGroupId,
-                                    take : 65
-                                }).then(ret3 => {
-                                        let $3 = cheerio.load(ret3.data);
-                                        $3('.table-striped tbody tr').each(function(i, elem) {
-                                            source.titles.push($(this).find('td:nth-child(1) a:nth-child(1)').text());
-                                            source.magnets.push($(this).find('td:nth-child(1) a:nth-child(2)').attr('data-clipboard-text'));
-                                            source.sizes.push($(this).find('td:nth-child(2)').text());
-                                            source.dates.push($(this).find('td:nth-child(3)').text());
-                                        });
-                                    }
-                                ).catch(e => {
-                                    console.error(`${new Date().toLocaleString()} [error] searchAnimeStep3 ${e}`);
-                                });
+
+                        let requestPromises = [];
+                        sourceInfoList.forEach(source => {
+                            if(source.titles.length == 15){
+                                requestPromises.push(
+                                    Axios.post('https://mikanani.me/Home/ExpandEpisodeTable',{
+                                        bangumiId : source.animeId,
+                                        subtitleGroupId : source.subtitleSortId,
+                                        take : 65
+                                    }).then(ret3 => {
+                                            let $3 = cheerio.load(ret3.data);
+                                            $3('.table-striped tbody tr').each(function(i, elem) {
+                                                source.titles.push($(this).find('td:nth-child(1) a:nth-child(1)').text());
+                                                source.magnets.push($(this).find('td:nth-child(1) a:nth-child(2)').attr('data-clipboard-text'));
+                                                source.sizes.push($(this).find('td:nth-child(2)').text());
+                                                source.dates.push($(this).find('td:nth-child(3)').text());
+                                            });
+                                        }
+                                    ).catch(e => {
+                                        console.error(`${new Date().toLocaleString()} [error] searchAnimeStep3 ${e}`);
+                                    })
+                                );
                             }
                         });
-                        */
 
-                        let flatSourceInfoList = infoParse(sourceInfoList);
-                        console.log('解析后资源数量：'+ flatSourceInfoList.length);
+                        await Promise.all(requestPromises).then(
+                            () => {
+                                let flatSourceInfoList = infoParse(sourceInfoList);
+                                console.log('解析后资源数量：'+ flatSourceInfoList.length);
 
-                        for (let i = 0; i < flatSourceInfoList.length; i++) {
-                            sql.addAnimeSourceInfo(flatSourceInfoList[i]).then(
-                                () => console.log(`[${i}]source insert ok`)
-                            ).catch(
-                                err => console.error(`[${i}]source insert ${err}`)
-                            );
-                        }
+                                for (let i = 0; i < flatSourceInfoList.length; i++) {
+                                    sql.addAnimeSourceInfo(flatSourceInfoList[i]).then(
+                                        () => console.log(`[${i}]source insert ok`)
+                                    ).catch(
+                                        err => console.error(`[${i}]source insert ${err}`)
+                                    );
+                                }
 
-                        msg = 'ok';
+                                msg = 'ok';
+                            }                            
+                        ).catch(e => { 
+                            console.error(`${new Date().toLocaleString()} [error] searchAnimeStep4 ${e}`);
+                        });
                     }
                 ).catch(e => {
                     console.error(`${new Date().toLocaleString()} [error] searchAnimeStep2 ${e}`);
