@@ -11,7 +11,7 @@
   "author": "takamichika",
   "license": "GPL-3.0",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "co": "^4.6.0",
     "cq-websocket": "1.8.1",
     "esm": "3.0.82",
