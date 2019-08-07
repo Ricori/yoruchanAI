@@ -173,7 +173,7 @@ async function privateAndAtMsg(e, context) {
 				str += '开始系统自检...\n'
 				str += '核心模块：' + (logger ? '正常' : '异常') + '\n';
 				str += '图片搜索模块：' + (searchImg ? '正常' : '异常') + '\n';
-				str += '番剧搜索模块：' + (searchAnime ? '正常' : '异常') + '\n';
+				str += '番剧搜索模块：' + (searchAnimeHandel ? '正常' : '异常') + '\n';
 				str += '番剧日程模块：' + (todayAnime ? '正常' : '异常') + '\n';
 				str += '番剧销量模块：' + (animeSale ? '正常' : '异常') + '\n';
 				str += '色图模块：' + (setuHandle ? '正常' : '异常') + '\n';

@@ -56,10 +56,44 @@ class Yurusql {
 		let mysql = this.mysql;
 		return co(function* () {
 			yield mysql.query(
-			'REPLACE INTO `bangumilist` (`id`, `name`) VALUES (?, ?)', 
+			'INSERT IGNORE INTO `bangumilist` (`id`, `name`) VALUES (?, ?)', 
 			[info.id, info.name]);
 		});
 	}
+
+	/**
+	 * 设置最新日期和集数
+	 *
+	 * @returns Promise
+	 * @memberof Yurusql
+	 */
+	getBangumiLatestEpAndDate(id) {
+		let mysql = this.mysql;
+		return co(function* () {
+			let que = yield mysql.query('SELECT * FROM `bangumilist` WHERE id=' + id);
+			let rq = que[0];
+			return {
+				date : rq[0].lastupdate,
+				ep : rq[0].latestepisode
+			};
+		});
+	}
+
+	/**
+	 * 设置最新日期和集数
+	 *
+	 * @returns Promise
+	 * @memberof Yurusql
+	 */
+	setBangumiLatestEpAndDate(id,lastupdate,latestepisode) {
+		let mysql = this.mysql;
+		return co(function* () {
+			yield mysql.query(
+			'UPDATE `bangumilist` SET `latestepisode`=?,`lastupdate`=? WHERE id=?', 
+			[latestepisode, lastupdate,id]);
+		});
+	}
+
 
 	/**
 	 * 增加字幕组记录
@@ -72,7 +106,7 @@ class Yurusql {
 		let mysql = this.mysql;
 		return co(function* () {
 			yield mysql.query(
-			'REPLACE INTO `subtitlegroup` (`id`, `sortid`,`name`) VALUES (?, ?, ?)', 
+			'INSERT IGNORE `subtitlegroup` (`id`, `sortid`,`name`) VALUES (?, ?, ?)', 
 			[info.id, info.sortid, info.name]);
 		});
 	}
@@ -90,7 +124,7 @@ class Yurusql {
 		let mysql = this.mysql;
 		return co(function* () {
 			yield mysql.query(
-			'INSERT INTO `animesouce` (`animeId`, `subtitleGroupId`, `definition`, `lanauage`, `episode`, `date`, `magnet`, `size`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
+			'INSERT IGNORE INTO `animesouce` (`animeId`, `subtitleGroupId`, `definition`, `lanauage`, `episode`, `date`, `magnet`, `size`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
 			[info.animeId, info.subtitleGroupId, info.definition, info.lanauage,info.episode,info.date,info.magnet,info.size]);
 		});
 	}

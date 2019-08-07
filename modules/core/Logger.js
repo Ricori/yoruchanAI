@@ -229,6 +229,9 @@ class Logger {
 			nowstep: 0,
 			timeout: null,
 			bangumiList : null,
+			subtitleGroupList : null,
+			sourcelist : null,
+			dateandep : null
 		};
 
 		let info = this.animeSearchLog[group];
@@ -240,9 +243,12 @@ class Logger {
 		if (sw) {
 			if (group != 0) {
 				info.timeout = setTimeout(() => {
-					info = null;
-					if (typeof cb == "function") cb();
-				}, 300 * 1000);
+					if(info.enable){
+						info.enable = false;
+						this.animeSearchLog[group] = null;
+						if (typeof cb == "function") cb();
+					}
+				}, 200 * 1000);
 			}
 			if (info.enable) return false;
 			info.enable = true;
@@ -251,7 +257,8 @@ class Logger {
 			return true;
 		} else {
 			if (info.enable) {
-				info = null;
+				info.enable = false;
+				this.animeSearchLog[group] = null;
 				return true;
 			}
 			return false;
@@ -295,6 +302,23 @@ class Logger {
 	setSearchBangumiList(group,bangumiList) {
 		if (!this.animeSearchLog[group] || !this.animeSearchLog[group].enable) return false;
 		this.animeSearchLog[group].bangumiList = bangumiList;
+		return true;
+	}
+
+	/**
+	 * 保存搜索的字幕组列表和资源列表
+	 *
+	 * @param {number} group 群号
+	 * @param {array[]} subtitleGroupList 字幕组列表
+	 * @param {array[]} sourcelist 资源列表
+	 * @returns 失败返回false，否则true
+	 * @memberof Logger
+	 */
+	setSearchSourceList(group,subtitleGroupList,sourcelist,dateandep) {
+		if (!this.animeSearchLog[group] || !this.animeSearchLog[group].enable) return false;
+		this.animeSearchLog[group].subtitleGroupList = subtitleGroupList;
+		this.animeSearchLog[group].sourcelist = sourcelist;
+		this.animeSearchLog[group].dateandep = dateandep;
 		return true;
 	}
 }
