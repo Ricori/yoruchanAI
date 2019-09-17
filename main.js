@@ -19,7 +19,8 @@ import { snDB } from './modules/searchimg/saucenao';
 //其他模块
 import animeSale from './modules/animeSale';
 import todayAnime from './modules/todayAnime';
-import searchVideo from './modules/searchVideo';
+//import searchVideo from './modules/searchVideo';
+import searchVideo2 from './modules/searchVideo2';
 
 //插件模块
 import setuHandle from './modules/plugin/Setu/handle';
@@ -177,7 +178,7 @@ async function privateAndAtMsg(e, context) {
 				str += '番剧日程模块：' + (todayAnime ? '正常' : '异常') + '\n';
 				str += '番剧销量模块：' + (animeSale ? '正常' : '异常') + '\n';
 				str += '色图模块：' + (setuHandle ? '正常' : '异常') + '\n';
-				str += '隐藏功能模块：' + (searchVideo ? '正常' : '异常') + '\n';
+				str += '隐藏功能模块：' + (searchVideo2 ? '正常' : '异常') + '\n';
 				str += '数据库连接状态：正常\n数据缓存状态：正常\n' ;
 				str += '守护进程：pm2 v3.2.4\n守护状态：正常\n管理用户允许使用--shutdown命令进行系统重启\n完毕。' ;
 				replyMsg(context, str, false);
@@ -239,7 +240,7 @@ async function privateAndAtMsg(e, context) {
 			condition: function(){ return /发车([a-zA-Z]{2,4}-[0-9]{3,4}$)/.exec(context.message)},
 			effect: async function(){ 
 				let fh = /([a-zA-Z]{2,4}-[0-9]{3,4}$)/.exec(context.message)[1];
-				searchVideo(fh,context).then(
+				searchVideo2(fh,context).then(
 					ret => { replyMsg(context, ret) }
 				);
 			}
