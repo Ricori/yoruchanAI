@@ -76,7 +76,7 @@ async function doSearch(imgURL, debug = false) {
 			synonyms = info.synonyms_chinese || []; //别名
 
 			//构造返回信息
-			msg = CQ.escape(`相似度${diff}% \n该截图出自第${episode}集的${posMin < 10 ? "0" : ""}${posMin}:${posSec < 10 ? "0" : ""}${posSec}`);
+			msg = CQ.escape(`相似度达到了${diff}% \n出自第${episode}集的${posMin < 10 ? "0" : ""}${posMin}:${posSec < 10 ? "0" : ""}${posSec}`);
 			
 			/*
 			if (quota <= 5) {

@@ -16,7 +16,6 @@ function getDateSec() {
 	return Math.floor(Date.now() / 1000);
 }
 
-
 /**
  * Picfinder数据库
  *
@@ -37,7 +36,6 @@ class Yurusql {
 		});
 	}
 
-
 	/**
 	 * 关闭数据库连接
 	 * 
@@ -45,6 +43,90 @@ class Yurusql {
 	 */
 	close() {
 		this.mysql.end();
+	}
+
+	/**
+	 * 增加bangumi记录
+	 *
+	 * @param {Object} info 信息对象
+	 * @returns Promise
+	 * @memberof Yurusql
+	 */
+	addBangumi(info) {
+		let mysql = this.mysql;
+		return co(function* () {
+			yield mysql.query(
+			'INSERT IGNORE INTO `bangumilist` (`id`, `name`) VALUES (?, ?)', 
+			[info.id, info.name]);
+		});
+	}
+
+	/**
+	 * 设置最新日期和集数
+	 *
+	 * @returns Promise
+	 * @memberof Yurusql
+	 */
+	getBangumiLatestEpAndDate(id) {
+		let mysql = this.mysql;
+		return co(function* () {
+			let que = yield mysql.query('SELECT * FROM `bangumilist` WHERE id=' + id);
+			let rq = que[0];
+			return {
+				date : rq[0].lastupdate,
+				ep : rq[0].latestepisode
+			};
+		});
+	}
+
+	/**
+	 * 设置最新日期和集数
+	 *
+	 * @returns Promise
+	 * @memberof Yurusql
+	 */
+	setBangumiLatestEpAndDate(id,lastupdate,latestepisode) {
+		let mysql = this.mysql;
+		return co(function* () {
+			yield mysql.query(
+			'UPDATE `bangumilist` SET `latestepisode`=?,`lastupdate`=? WHERE id=?', 
+			[latestepisode, lastupdate,id]);
+		});
+	}
+
+
+	/**
+	 * 增加字幕组记录
+	 *
+	 * @param {Object} info 信息对象
+	 * @returns Promise
+	 * @memberof Yurusql
+	 */
+	addSubtitleGroup(info) {
+		let mysql = this.mysql;
+		return co(function* () {
+			yield mysql.query(
+			'INSERT IGNORE `subtitlegroup` (`id`, `sortid`,`name`) VALUES (?, ?, ?)', 
+			[info.id, info.sortid, info.name]);
+		});
+	}
+
+
+
+	/**
+	 * 增加动画资源记录
+	 *
+	 * @param {Object} info 动画信息对象
+	 * @returns Promise
+	 * @memberof Yurusql
+	 */
+	addAnimeSourceInfo(info) {
+		let mysql = this.mysql;
+		return co(function* () {
+			yield mysql.query(
+			'INSERT IGNORE INTO `animesouce` (`animeId`, `subtitleGroupId`, `definition`, `lanauage`, `episode`, `date`, `magnet`, `size`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', 
+			[info.animeId, info.subtitleGroupId, info.definition, info.lanauage,info.episode,info.date,info.magnet,info.size]);
+		});
 	}
 
 
@@ -93,6 +175,7 @@ class Yurusql {
 	 * @memberof Yurusql
 	 */
 	static async sqlInitialize() {
+		/*
 		if (isEnable && !hasInitialize) {
 			let test = new Yurusql();
 			await co(function* () {
@@ -101,6 +184,7 @@ class Yurusql {
 			});
 			hasInitialize = true;
 		}
+		*/
 	}
 
 	/**

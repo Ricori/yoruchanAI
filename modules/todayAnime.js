@@ -21,7 +21,7 @@ async function doSearch(date) {
                 msg = replyText.serchScheduleOk(date);
 
                 list.forEach(fj => {
-                    msg += '[' + fj.title + '][' + fj.episode + ']\n';
+                    msg += '[' + fj.title + '][' + fj.episode ? fj.episode : ''  + ']\n';
 
                     msg += fj.originStation + ' ' + fj.originTime + '\n';
 

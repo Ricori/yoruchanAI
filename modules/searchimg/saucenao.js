@@ -94,7 +94,7 @@ async function doSearch(imgURL, db, debug = false) {
 				warnMsg += CQ.escape(replyText.serchSimilarityLow);
 
 			//回复的消息
-			msg = CQ.share(url, `${title}相似度为${similarity}%`, origURL, thumbnail);
+			msg = CQ.share(url, `${title}相似度达到了${similarity}%`, origURL, thumbnail);
 
 			success = true;
 

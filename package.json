@@ -1,13 +1,20 @@
 {
   "name": "yoruchan-ai",
-  "version": "1.1.0",
+  "version": "1.4.2",
   "description": "Is my dear Yoruchan online ? (.jpg",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["robot","QQ","yoruchan","anime","manka","comic"],
+  "keywords": [
+    "robot",
+    "QQ",
+    "yoruchan",
+    "anime",
+    "manka",
+    "comic"
+  ],
   "author": "takamichika",
   "license": "GPL-3.0",
   "dependencies": {
@@ -20,6 +27,7 @@
     "mysql-co": "0.0.4",
     "querystring": "^0.2.0",
     "random-seed": "^0.3.0",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7"
   }
 }

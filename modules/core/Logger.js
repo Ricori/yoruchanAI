@@ -24,10 +24,14 @@ function updateBanListFile() {
  */
 class Logger {
 	constructor() {
-		this.searchMode = []; //搜图模式
-		this.repeater = []; //复读
+		this.searchMode = []; //搜图模式记录
+		this.repeater = []; //复读记录
 		this.searchCount = []; //搜索次数记录
 		this.date = new Date().getDate();
+
+		this.setulog = {g:{},u:{}};  //setu记录
+
+		this.animeSearchLog = {};
 
 		//读取保存数据
 		/*if (Fs.existsSync(logFile)) {
@@ -180,7 +184,6 @@ class Logger {
 	 */
 	canSearch(u, limit, key = 'search') {
 		if (!this.searchCount[u]) this.searchCount[u] = {};
-
 		if (key == 'setu') {
 			if (!this.searchCount[u][key]) this.searchCount[u][key] = {
 				date: new Date().getTime() - limit.cd * 1000,
@@ -192,14 +195,132 @@ class Logger {
 			setuLog.date = new Date().getTime();
 			return true;
 		}
-
 		if (limit == 0) return true;
 		if (!this.searchCount[u][key]) this.searchCount[u][key] = 0;
 		if (this.searchCount[u][key]++ < limit) return true;
 		return false;
 	}
 
+	/**
+	 * 获取setu记录
+	 *
+	 * @memberof Logger
+	 */
+	getSetuLog() {
+		return this.setulog;
+	}
 
+
+
+
+	/**
+	 * 番剧搜索模式开关
+	 *
+	 * @param {number} group 群号
+	 * @param {number} user QQ号
+	 * @param {boolean} sw 开启为true，关闭为false
+	 * @returns 已经开启或已经关闭为false，否则为true
+	 * @memberof Logger
+	 */
+	switchSearchAnime(group, user, sw, cb = null) {
+		if (!this.animeSearchLog[group]) this.animeSearchLog[group] = {
+			enable: false,
+			useuser : null,
+			nowstep: 0,
+			timeout: null,
+			bangumiList : null,
+			subtitleGroupList : null,
+			sourcelist : null,
+			dateandep : null
+		};
+
+		let info = this.animeSearchLog[group];
+		if (info.timeout) {
+			clearTimeout(info.timeout);
+			info.timeout = null;
+		}
+
+		if (sw) {
+			if (group != 0) {
+				info.timeout = setTimeout(() => {
+					if(info.enable){
+						info.enable = false;
+						this.animeSearchLog[group] = null;
+						if (typeof cb == "function") cb();
+					}
+				}, 200 * 1000);
+			}
+			if (info.enable) return false;
+			info.enable = true;
+			info.useuser = user;
+			info.nowstep = 1;
+			return true;
+		} else {
+			if (info.enable) {
+				info.enable = false;
+				this.animeSearchLog[group] = null;
+				return true;
+			}
+			return false;
+		}
+	}
+
+	/**
+	 * 获取番剧搜索模式状态
+	 *
+	 * @param {number} group 群号
+	 * @returns 未开启返回false，否则返回info
+	 * @memberof Logger
+	 */
+	getSearchAnimeState(group) {
+		if (!this.animeSearchLog[group] || !this.animeSearchLog[group].enable) return false;
+		return this.animeSearchLog[group];
+	}
+
+	/**
+	 * 更改番剧搜索模式step
+	 *
+	 * @param {number} group 群号
+	 * @param {number} step 当前步骤
+	 * @returns 失败返回false，否则true
+	 * @memberof Logger
+	 */
+	setSearchAnimeStep(group,step) {
+		if (!this.animeSearchLog[group] || !this.animeSearchLog[group].enable) return false;
+		this.animeSearchLog[group].nowstep = step;
+		return true;
+	}
+
+	/**
+	 * 保存搜索的番剧列表
+	 *
+	 * @param {number} group 群号
+	 * @param {array[]} bangumiList 番剧列表
+	 * @returns 失败返回false，否则true
+	 * @memberof Logger
+	 */
+	setSearchBangumiList(group,bangumiList) {
+		if (!this.animeSearchLog[group] || !this.animeSearchLog[group].enable) return false;
+		this.animeSearchLog[group].bangumiList = bangumiList;
+		return true;
+	}
+
+	/**
+	 * 保存搜索的字幕组列表和资源列表
+	 *
+	 * @param {number} group 群号
+	 * @param {array[]} subtitleGroupList 字幕组列表
+	 * @param {array[]} sourcelist 资源列表
+	 * @returns 失败返回false，否则true
+	 * @memberof Logger
+	 */
+	setSearchSourceList(group,subtitleGroupList,sourcelist,dateandep) {
+		if (!this.animeSearchLog[group] || !this.animeSearchLog[group].enable) return false;
+		this.animeSearchLog[group].subtitleGroupList = subtitleGroupList;
+		this.animeSearchLog[group].sourcelist = sourcelist;
+		this.animeSearchLog[group].dateandep = dateandep;
+		return true;
+	}
 }
 
 export default Logger;
