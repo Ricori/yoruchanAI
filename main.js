@@ -19,11 +19,13 @@ import { snDB } from './modules/searchimg/saucenao';
 //其他模块
 import animeSale from './modules/animeSale';
 import todayAnime from './modules/todayAnime';
-import searchVideo from './modules/searchVideo';
-import searchAnime from './modules/serchAnime';
+//import searchVideo from './modules/searchVideo';
+import searchVideo2 from './modules/searchVideo2';
 
 //插件模块
 import setuHandle from './modules/plugin/Setu/handle';
+import searchAnimeHandel from './modules/plugin/SearchAnime/handle'
+
 
 //本地代理服务器
 import Proxyf from './modules/core/Proxy'
@@ -142,6 +144,8 @@ function commonHandle(e, context) {
 	if (setting.setu.enable) {
 		if (setuHandle(context,bot,replyMsg,logger)) return false;
 	}
+	if (searchAnimeHandel(context,bot,replyMsg,logger)) return false;
+
 	return true;
 }
 
@@ -169,10 +173,12 @@ async function privateAndAtMsg(e, context) {
 				str += '目前占用内存：' + process.memoryUsage().rss + '字节\n';
 				str += '开始系统自检...\n'
 				str += '核心模块：' + (logger ? '正常' : '异常') + '\n';
-				str += '搜索模块：' + (searchImg ? '正常' : '异常') + '\n';
+				str += '图片搜索模块：' + (searchImg ? '正常' : '异常') + '\n';
+				str += '番剧搜索模块：' + (searchAnimeHandel ? '正常' : '异常') + '\n';
 				str += '番剧日程模块：' + (todayAnime ? '正常' : '异常') + '\n';
 				str += '番剧销量模块：' + (animeSale ? '正常' : '异常') + '\n';
 				str += '色图模块：' + (setuHandle ? '正常' : '异常') + '\n';
+				str += '隐藏功能模块：' + (searchVideo2 ? '正常' : '异常') + '\n';
 				str += '数据库连接状态：正常\n数据缓存状态：正常\n' ;
 				str += '守护进程：pm2 v3.2.4\n守护状态：正常\n管理用户允许使用--shutdown命令进行系统重启\n完毕。' ;
 				replyMsg(context, str, false);
@@ -234,16 +240,7 @@ async function privateAndAtMsg(e, context) {
 			condition: function(){ return /发车([a-zA-Z]{2,4}-[0-9]{3,4}$)/.exec(context.message)},
 			effect: async function(){ 
 				let fh = /([a-zA-Z]{2,4}-[0-9]{3,4}$)/.exec(context.message)[1];
-				searchVideo(fh,context).then(
-					ret => { replyMsg(context, ret) }
-				);
-			}
-		},
-		{
-			condition: function(){ return /测试番剧搜索:(.*)/.exec(context.message)},
-			effect: async function(){ 
-				let searchAnimeName = /测试番剧搜索:(.*)/.exec(context.message)[1];
-				searchAnime(context,searchAnimeName).then(
+				searchVideo2(fh,context).then(
 					ret => { replyMsg(context, ret) }
 				);
 			}

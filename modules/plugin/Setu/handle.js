@@ -1,4 +1,4 @@
-import CQ from '../../core/CQcode';
+﻿import CQ from '../../core/CQcode';
 import Setu from './setu';
 import config from '../../../config';
 import replyText from '../../../replyTextConfig';
@@ -39,7 +39,7 @@ function sendSetu(context,bot,replyMsg,logger) {
 		return true;
 	}
 
-	if (/([我想要一份快发].*[色h瑟]图)/.exec(context.message)) {
+	if (/([我想要一份快发].*[色h瑟涩]图)/.exec(context.message)) {
 		let log;
 
 		//普通群

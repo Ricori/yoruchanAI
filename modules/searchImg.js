@@ -14,8 +14,6 @@ import whatanime from './searchimg/whatanime';
  *
  * @param {object} context
  * @param {number} [customDB=-1]
- * @param {object} replyMsg
- * @param {object} logger 
  * @returns
  */
 async function searchImg(context, customDB = -1,replyMsg,logger) {
