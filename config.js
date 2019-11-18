@@ -39,7 +39,7 @@ const config = {
 		port: 3306,
 		db: "yuruchan",
 		user: "root",
-		password: "ca2326298",
+		password: "",
 		expire: 172800
 	}
 
