@@ -148,7 +148,7 @@ export default async function (context, botUtil) {
     ];
 
     //执行处理
-    for (handle of handleArr) {
+    for (let handle of handleArr) {
         if (handle.condition()) {
             handle.effect();
             return;

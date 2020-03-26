@@ -18,7 +18,7 @@ function MsgHandle(context, botUtil) {
         //step1
         if (/测试番剧搜索:(.*)/.exec(context.message)) {
             if (state && state.enable) {
-                botUtil.botUtil.replyMsg(context, '群里已经有人在使用夜夜酱搜索番剧啦！', true);
+                botUtil.replyMsg(context, '群里已经有人在使用夜夜酱搜索番剧啦！', true);
                 return true;
             }
 
@@ -26,7 +26,7 @@ function MsgHandle(context, botUtil) {
             if (searchAnimeName == '') return false;
 
             botUtil.logger.switchSearchAnime(group, user, true, () => {
-                botUtil.botUtil.replyMsg(context, '过长时间没有完成番剧搜索操作，夜夜酱已经释放控制权啦');
+                botUtil.replyMsg(context, '过长时间没有完成番剧搜索操作，夜夜酱已经释放控制权啦');
                 return true;
             });
 
@@ -34,7 +34,7 @@ function MsgHandle(context, botUtil) {
                 if (step1result.success) {
                     if (step1result.length == 0) {
                         msg = '夜夜酱没有找到相关的番剧，请主人尝试搜索关键词。'
-                        botUtil.botUtil.replyMsg(context, msg);
+                        botUtil.replyMsg(context, msg);
                         botUtil.logger.switchSearchAnime(group, user, false);
                     } else if (step1result.length == 1) {
                         let bangumiList = step1result.data;

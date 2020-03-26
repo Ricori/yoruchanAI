@@ -6,7 +6,7 @@ import REPLYTEXT from '../replyTextConfig';
 import setuHandle from '../modules/plugin/Setu/handle';
 import searchAnimeHandel from '../modules/plugin/SearchAnime/handle'
 
-export default async function (context, botUtil) {
+export default function (context, botUtil) {
 
     //黑名单检测
     if (botUtil.logger.checkBan(context.user_id, context.group_id)) {
