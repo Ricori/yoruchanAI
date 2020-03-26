@@ -1,6 +1,7 @@
 # Myself
-/config.json
+/config.js
 /data/*.json
+/restart.bat
 
 # Logs
 logs
