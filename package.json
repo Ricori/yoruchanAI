@@ -12,7 +12,6 @@
     "QQ",
     "yoruchan",
     "anime",
-    "manka",
     "comic"
   ],
   "author": "takamichika",
@@ -24,6 +23,7 @@
     "esm": "3.1.0",
     "koa": "^2.6.2",
     "koa-router": "^7.4.0",
+    "md5-node": "^1.0.1",
     "mysql-co": "0.0.4",
     "querystring": "^0.2.0",
     "random-seed": "^0.3.0",

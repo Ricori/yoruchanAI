@@ -4,8 +4,8 @@ import Path from 'path';
 const banListFile = Path.resolve(__dirname, '../../data/ban.json');
 const logFile = Path.resolve(__dirname, '../../data/log.json');
 
-if (!Fs.existsSync(banListFile)){
-	Fs.writeFileSync(banListFile, JSON.stringify({ u:[], g:[] }))
+if (!Fs.existsSync(banListFile)) {
+	Fs.writeFileSync(banListFile, JSON.stringify({ u: [], g: [] }))
 };
 
 //封禁列表
@@ -29,7 +29,7 @@ class Logger {
 		this.searchCount = []; //搜索次数记录
 		this.date = new Date().getDate();
 
-		this.setulog = {g:{},u:{}};  //setu记录
+		this.setulog = { g: {}, u: {} };  //setu记录
 
 		this.animeSearchLog = {};
 
@@ -56,13 +56,13 @@ class Logger {
 		}, 60 * 1000);
 	}
 
-	static ban(type, id) {
+	ban(type, id) {
 		if (type == 'u') banList.u.push(id);
 		else if (type == 'g') banList.g.push(id);
 		updateBanListFile();
 	}
 
-	static checkBan(u, g = 0) {
+	checkBan(u, g = 0) {
 		if (banList.u.includes(u)) return true;
 		if (g != 0 && banList.g.includes(g)) return true;
 		return false;
@@ -210,9 +210,6 @@ class Logger {
 		return this.setulog;
 	}
 
-
-
-
 	/**
 	 * 番剧搜索模式开关
 	 *
@@ -225,13 +222,13 @@ class Logger {
 	switchSearchAnime(group, user, sw, cb = null) {
 		if (!this.animeSearchLog[group]) this.animeSearchLog[group] = {
 			enable: false,
-			useuser : null,
+			useuser: null,
 			nowstep: 0,
 			timeout: null,
-			bangumiList : null,
-			subtitleGroupList : null,
-			sourcelist : null,
-			dateandep : null
+			bangumiList: null,
+			subtitleGroupList: null,
+			sourcelist: null,
+			dateandep: null
 		};
 
 		let info = this.animeSearchLog[group];
@@ -243,12 +240,10 @@ class Logger {
 		if (sw) {
 			if (group != 0) {
 				info.timeout = setTimeout(() => {
-					if(info.enable){
-						info.enable = false;
-						this.animeSearchLog[group] = null;
-						if (typeof cb == "function") cb();
-					}
-				}, 200 * 1000);
+					info.enable = false;
+					this.animeSearchLog[group] = null;
+					if (typeof cb == "function") cb();
+				}, 300 * 1000);
 			}
 			if (info.enable) return false;
 			info.enable = true;
@@ -285,7 +280,7 @@ class Logger {
 	 * @returns 失败返回false，否则true
 	 * @memberof Logger
 	 */
-	setSearchAnimeStep(group,step) {
+	setSearchAnimeStep(group, step) {
 		if (!this.animeSearchLog[group] || !this.animeSearchLog[group].enable) return false;
 		this.animeSearchLog[group].nowstep = step;
 		return true;
@@ -299,7 +294,7 @@ class Logger {
 	 * @returns 失败返回false，否则true
 	 * @memberof Logger
 	 */
-	setSearchBangumiList(group,bangumiList) {
+	setSearchBangumiList(group, bangumiList) {
 		if (!this.animeSearchLog[group] || !this.animeSearchLog[group].enable) return false;
 		this.animeSearchLog[group].bangumiList = bangumiList;
 		return true;
@@ -314,7 +309,7 @@ class Logger {
 	 * @returns 失败返回false，否则true
 	 * @memberof Logger
 	 */
-	setSearchSourceList(group,subtitleGroupList,sourcelist,dateandep) {
+	setSearchSourceList(group, subtitleGroupList, sourcelist, dateandep) {
 		if (!this.animeSearchLog[group] || !this.animeSearchLog[group].enable) return false;
 		this.animeSearchLog[group].subtitleGroupList = subtitleGroupList;
 		this.animeSearchLog[group].sourcelist = sourcelist;
