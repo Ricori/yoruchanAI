@@ -243,12 +243,10 @@ class Logger {
 		if (sw) {
 			if (group != 0) {
 				info.timeout = setTimeout(() => {
-					if(info.enable){
-						info.enable = false;
-						this.animeSearchLog[group] = null;
-						if (typeof cb == "function") cb();
-					}
-				}, 200 * 1000);
+					info.enable = false;
+					this.animeSearchLog[group] = null;
+					if (typeof cb == "function") cb();
+				}, 300 * 1000);
 			}
 			if (info.enable) return false;
 			info.enable = true;

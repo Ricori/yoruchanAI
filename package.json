@@ -25,6 +25,7 @@
     "esm": "3.0.82",
     "koa": "^2.7.0",
     "koa-router": "^7.4.0",
+    "md5-node": "^1.0.1",
     "mysql-co": "0.0.4",
     "querystring": "^0.2.0",
     "random-seed": "^0.3.0",

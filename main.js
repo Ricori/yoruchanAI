@@ -1,4 +1,4 @@
-import CQWebsocket from 'cq-websocket';
+﻿import CQWebsocket from 'cq-websocket';
 
 //核心模块
 import CQ from './modules/core/CQcode';
@@ -20,7 +20,9 @@ import { snDB } from './modules/searchimg/saucenao';
 import animeSale from './modules/animeSale';
 import todayAnime from './modules/todayAnime';
 //import searchVideo from './modules/searchVideo';
-import searchVideo2 from './modules/searchVideo2';
+//import searchVideo2 from './modules/searchVideo2';
+import searchVideo3 from './modules/searchVideo3';
+import recommendCar from './modules/recommend';
 
 //插件模块
 import setuHandle from './modules/plugin/Setu/handle';
@@ -167,20 +169,24 @@ async function privateAndAtMsg(e, context) {
 		},
 		{	//运行状态
 			condition: function(){ return hasText("status") || hasText("运行状态") },
-			effect: function(){
-				let str = 'YURU SYSTEM 16.4\n';
+			effect: function () {
+				let str = 'YURU SYSTEM 16.8\n';
 				str += '系统运行时长：' + process.uptime() + '秒\n';
 				str += '目前占用内存：' + process.memoryUsage().rss + '字节\n';
-				str += '开始系统自检...\n'
-				str += '核心模块：' + (logger ? '正常' : '异常') + '\n';
+				str += '开始自检...\n'
+				str += '核心：' + (logger ? '正常' : '异常') + '\n';
+				str += '正常的模块：图片搜索模块、番剧搜索模块、番剧日程模块、色图模块模块、隐藏功能模块\n';
+				str += '已爆炸的模块：番剧销量模块\n';
+				/*
 				str += '图片搜索模块：' + (searchImg ? '正常' : '异常') + '\n';
 				str += '番剧搜索模块：' + (searchAnimeHandel ? '正常' : '异常') + '\n';
 				str += '番剧日程模块：' + (todayAnime ? '正常' : '异常') + '\n';
 				str += '番剧销量模块：' + (animeSale ? '正常' : '异常') + '\n';
 				str += '色图模块：' + (setuHandle ? '正常' : '异常') + '\n';
 				str += '隐藏功能模块：' + (searchVideo2 ? '正常' : '异常') + '\n';
-				str += '数据库连接状态：正常\n数据缓存状态：正常\n' ;
-				str += '守护进程：pm2 v3.2.4\n守护状态：正常\n管理用户允许使用--shutdown命令进行系统重启\n完毕。' ;
+				*/
+				str += '数据存储与交互：1.MongoDB 正常2.Redis缓存数据库 正常\n';
+				str += '守护：pm2 v3.2.4 正常\n核心管理命令：允许使用--shutdown命令进行系统重启';
 				replyMsg(context, str, false);
 			}
 		},
@@ -237,12 +243,21 @@ async function privateAndAtMsg(e, context) {
 			}
 		},
 		{
-			condition: function(){ return /发车([a-zA-Z]{2,4}-[0-9]{3,4}$)/.exec(context.message)},
+			//([a-zA-Z]{2,4}-[0-9]{3,4}$)
+			condition: function(){ return /发车(.*)/.exec(context.message)},
 			effect: async function(){ 
-				let fh = /([a-zA-Z]{2,4}-[0-9]{3,4}$)/.exec(context.message)[1];
-				searchVideo2(fh,context).then(
+				let fh = /发车(.*)/.exec(context.message)[1];
+				fh = encodeURI(fh);
+				searchVideo3(fh,context).then(
 					ret => { replyMsg(context, ret) }
 				);
+			}
+		},
+		{	
+			condition: function(){ return hasText("推荐车次") },
+			effect: function(){
+				let msg = recommendCar();
+				replyMsg(context, msg);
 			}
 		},
 
