@@ -56,13 +56,13 @@ class Logger {
 		}, 60 * 1000);
 	}
 
-	static ban(type, id) {
+	ban(type, id) {
 		if (type == 'u') banList.u.push(id);
 		else if (type == 'g') banList.g.push(id);
 		updateBanListFile();
 	}
 
-	static checkBan(u, g = 0) {
+	checkBan(u, g = 0) {
 		if (banList.u.includes(u)) return true;
 		if (g != 0 && banList.g.includes(g)) return true;
 		return false;
