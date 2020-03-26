@@ -77,7 +77,7 @@ async function doSearch(imgURL, debug = false) {
 
 			//构造返回信息
 			msg = CQ.escape(`相似度达到了${diff}% \n出自第${episode}集的${posMin < 10 ? "0" : ""}${posMin}:${posSec < 10 ? "0" : ""}${posSec}`);
-			
+
 			/*
 			if (quota <= 5) {
 				appendMsg(`cookie[${cookieIndex}]：注意，${expire}秒内搜索次数仅剩${quota}次`);

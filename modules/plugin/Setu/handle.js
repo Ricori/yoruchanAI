@@ -13,22 +13,22 @@ const setting = config.yuruConfig;
  * @param {object} logger
  * @returns 是否发送
  */
-function sendSetu(context,bot,replyMsg,logger) {
+function sendSetu(context, botUtil) {
 	const setuSetting = setting.setu;
-	let setulog = logger.getSetuLog();
-	
+	let setulog = botUtil.logger.getSetuLog();
+
 	if (context.message.search('撤回') !== -1) {
 		if (context.group_id) {
-			if(setulog.g[context.group_id]){
-				if(setulog.g[context.group_id].now == true && setulog.g[context.group_id].msg){
-					bot('delete_msg', {message_id: setulog.g[context.group_id].msg.data.message_id});
+			if (setulog.g[context.group_id]) {
+				if (setulog.g[context.group_id].now == true && setulog.g[context.group_id].msg) {
+					botUtil.bot('delete_msg', { message_id: setulog.g[context.group_id].msg.data.message_id });
 					setulog.g[context.group_id] = null;
 				}
 			}
-		}else{
-			if(setulog.u[context.user_id]){
-				if(setulog.u[context.user_id].now == true && setulog.u[context.user_id].msg){
-					bot('delete_msg', {message_id: setulog.u[context.user_id].msg.data.message_id});
+		} else {
+			if (setulog.u[context.user_id]) {
+				if (setulog.u[context.user_id].now == true && setulog.u[context.user_id].msg) {
+					botUtil.bot('delete_msg', { message_id: setulog.u[context.user_id].msg.data.message_id });
 					setulog.u[context.user_id] = null;
 				}
 			}
@@ -54,41 +54,41 @@ function sendSetu(context,bot,replyMsg,logger) {
 				limit.cd = setuSetting.whiteCd;
 				delTime = setuSetting.whiteDeleteTime;
 			} else if (setuSetting.whiteOnly) {
-				replyMsg(context, replyText.refuse);
+				botUtil.replyMsg(context, replyText.refuse);
 				return true;
 			}
 
 			setulog.g[context.group_id] = {
-				now : true,
-				msg : undefined
+				now: true,
+				msg: undefined
 			}
 			log = setulog.g[context.group_id];
 
 		} else {
 			if (!setuSetting.allowPM) {
-				replyMsg(context, replyText.refuse);
+				botUtil.replyMsg(context, replyText.refuse);
 				return true;
 			}
 			setulog.u[context.user_id] = {
-				now : true,
-				msg : undefined
+				now: true,
+				msg: undefined
 			}
 			log = setulog.u[context.user_id];
 			limit.cd = 0; //私聊无cd
 		}
 
-		if (!logger.canSearch(context.user_id, limit, 'setu')) {
-			replyMsg(context, replyText.setuLimit, true);
+		if (!botUtil.logger.canSearch(context.user_id, limit, 'setu')) {
+			botUtil.replyMsg(context, replyText.setuLimit, true);
 			return;
 		}
 
 		Axios.get('https://api.lolicon.app/setu/zhuzhu.php').then(ret => {
-			replyMsg(context, CQ.img(`http://127.0.0.1:60233/?key=99887766&url=${ret.data.file}&type=setu`)).then(r => {
+			botUtil.replyMsg(context, CQ.img(`http://127.0.0.1:60233/?key=99887766&url=${ret.data.file}&type=setu`)).then(r => {
 				log.now = true;
 				log.msg = r;
-				if (delTime > 0){
+				if (delTime > 0) {
 					setTimeout(() => {
-						if (r && r.data && r.data.message_id) bot('delete_msg', {
+						if (r && r.data && r.data.message_id) botUtil.bot('delete_msg', {
 							message_id: r.data.message_id
 						});
 					}, delTime * 1000)
@@ -101,7 +101,7 @@ function sendSetu(context,bot,replyMsg,logger) {
 			});
 		}).catch(e => {
 			console.error(`${new Date().toLocaleString()}\n${e}`);
-			replyMsg(context, replyText.setuAbnormal);
+			botUtil.replyMsg(context, replyText.setuAbnormal);
 		});
 
 		return true;

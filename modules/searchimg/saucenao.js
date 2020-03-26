@@ -88,7 +88,7 @@ async function doSearch(imgURL, db, debug = false) {
 			else if (short_remaining < 5)
 				warnMsg += CQ.escape(`saucenao：夜夜酱发现主人30s内搜图次数仅剩${short_remaining}次了呢\n`);
 			*/
-			
+
 			//相似度
 			if (similarity < 50)
 				warnMsg += CQ.escape(replyText.serchSimilarityLow);

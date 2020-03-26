@@ -10,7 +10,6 @@ const config = {
 	reconnectionDelay: 5000,
 
 	yuruConfig: {
-		debug: false,
 		admin: [],
 		autoAddFriend: true,
 		autoAddGroup: false,
@@ -32,7 +31,7 @@ const config = {
 			whiteDeleteTime: 60
 		}
 	},
-	
+
 	mysql: {
 		enable: true,
 		host: "127.0.0.1",
